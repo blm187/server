@@ -1,0 +1,21 @@
+注册命令
+   python tools/register_speaker.py \
+     --speaker-id test1 \
+     --speaker-name "姓名" \
+     --audio-files 音频文件
+
+# 声纹识别配置
+voiceprint:
+  # 使用本地MFCC声纹识别（true=本地MFCC, false=外部API）
+  use_local: true
+  # 本地MFCC配置
+  local:
+    library_path: "data/voiceprint_library.pkl"
+    similarity_threshold: 0.7
+  # 声纹接口地址（外部API模式时使用）
+  url: 
+  # 说话人配置：speaker_id,名称,描述
+  speakers:
+    - "test1,张三,张三是一个程序员"
+    - "test2,李四,李四是一个产品经理"
+    - "test3,王五,王五是一个设计师"
