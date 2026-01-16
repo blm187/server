@@ -1,0 +1,36 @@
+# 语音分离配置（音源分离）
+# 推荐方案选择：
+# 1. pyannote（推荐）- 易集成，支持多人场景（2-5人），社区活跃
+# 2. mossformer2 - 性能优秀，需要SpeechBrain环境，适合2-3人场景
+# 3. conv_tasnet - 速度快，资源占用低，主要适合2人场景
+speech_separation:
+  enabled: false  # 是否启用语音分离（模型已就绪，已启用）
+  provider: conv_tasnet  # 选择分离方案：conv_tasnet（完整5阶段Pipeline）
+  
+  conv_tasnet:
+    # Conv-TasNet完整Pipeline配置（5阶段：分离→VAD→x-vector→聚类→时间戳）
+    model_name: "models/ConvTasNet_Libri2Mix_sepnoisy_16k"  # 使用本地模型路径
+    max_speakers: 2  # 最多说话人数量（对应模型支持的人数）
+    similarity_threshold: 0.6  # 聚类相似度阈值（对应余弦距离0.6），动态阈值调整时会在此基础上自适应
+    use_webrtc_vad: true  # 是否使用WebRTC VAD3（阶段2）
+    use_ecapa: true  # 是否使用ECAPA-TDNN提取x-vector（阶段3），需要speechbrain
+    energy_threshold: 0.02  # 能量阈值（提高以过滤更多噪声，单人场景建议0.015-0.02），现在会使用此配置值
+    skip_single_speaker: true  # 是否跳过单人场景（false=强制启用分离，true=单人场景跳过分离，推荐设为true）
+    use_adaptive_threshold: true  # 是否使用动态阈值调整（true=根据数据自适应调整，false=使用固定阈值）
+    single_speaker_energy_std_threshold: 0.3  # 单人场景检测的能量标准差阈值（越小越容易判定为单人，仅用于simple方法）
+    # 单人检测方法配置
+    single_speaker_detection_method: "hybrid"  # 检测方法："simple"（简单）| "enhanced"（增强）| "xvector"（x-vector）| "hybrid"（混合，推荐）
+    single_speaker_xvector_threshold: 0.7  # x-vector相似度阈值（用于xvector和hybrid方法，越大越严格）
+    single_speaker_energy_std_threshold: 0.5  # 单人场景检测的能量标准差阈值（越小越容易判定为单人）
+    # 流式处理配置
+    streaming_enabled: true  # 是否启用流式处理（true=流式模式，false=批量模式）
+    chunk_size_ms: 400  # 流式处理块大小（毫秒），推荐400ms
+    context_size_ms: 200  # 上下文大小（毫秒），用于滑动窗口，推荐200ms
+    overlap_size_ms: 50  # 边界平滑重叠大小（毫秒），用于消除边界噪声，推荐50ms
+    # 流式处理增强配置
+    agc_enabled: true  # 是否启用实时AGC（自动增益控制）
+    agc_target_rms: 0.1  # AGC目标RMS（0.1推荐）
+    agc_max_gain_db: 12.0  # AGC最大增益（12dB，防止远场小声道被放大成噪声）
+    snr_estimation_enabled: true  # 是否启用SNR估计和动态阈值调整
+    # cache_dir: "models/conv_tasnet"  # 可选：本地模型缓存目录（取消注释以使用）
+  
