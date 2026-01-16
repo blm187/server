@@ -1,0 +1,19 @@
+# 情感识别配置（基于MFCC特征的情感识别）
+# 使用MFCC特征提取 + 机器学习/深度学习模型进行情感识别
+# 支持的情感类别：愤怒、厌恶、恐惧、高兴、平静、悲伤、惊讶（7类）
+# 
+# ⚠️ 重要说明：
+# 1. 系统已实现 SenseVoice 原生情感识别（优先使用），准确率高，无需额外配置
+# 2. 如果 SenseVoice 未提供情感，则使用此配置的 MFCC 方案作为备选
+# 3. 如需使用 PyTorch 模型（MFCC方案），请下载模型后配置 model_path
+# 
+# 下载 PyTorch 模型（MFCC方案备选）：
+#   方法1：运行下载脚本（需要网络）：python scripts/download_emotion_model.py
+#   方法2：手动下载后上传到 models/ 目录：
+#     - LSTM.pth: https://huggingface.co/innnky/speech-emotion-recognition-zh-cn/resolve/main/models/LSTM.pth
+#     - 然后设置 model_path: models/LSTM.pth
+#   详细说明请查看：文档/情感识别模型配置指南.md
+emotion_recognition:
+  enabled: true  # 是否启用情感识别（作为 SenseVoice 的备选方案）
+  model_path: null  # 预训练模型路径（.pth 或 .pkl 文件），如果为null则使用基于统计特征的简单分类器
+  use_simple_emotions: true  # 是否使用简化的情感类别（true=4类：平静/高兴/悲伤/愤怒，false=7类：包含恐惧/惊讶/厌恶）
